@@ -11,11 +11,14 @@ The package describes how a channel is identified, displayed, collected, normali
 - `src/core.ts` contains schema types, registry helpers, validators, and render helpers.
 - `src/channels/` contains one built-in channel per market-qualified source file.
 - `src/index.ts` is the public source module.
-- `test/payment-channels.test.mjs` is the runtime contract test suite. Tests import compiled output from `dist`.
+- `test/payment-channels.test.mjs` is the runtime contract test suite. Tests import compiled ESM output from `dist/esm`.
+- `test/payment-channels.cjs.test.cjs` is a CommonJS smoke test. It `require()`s compiled output from `dist/cjs` and checks it matches the ESM result for a shared fixture.
 - `README.md` is the consumer-facing API and release documentation.
 - `CHANGELOG.md` is generated per release from Conventional Commit messages.
 - `RELEASING.md` documents release preparation, npm trusted publishing, and recovery.
 - `package.json` and `package-lock.json` define the npm package and reproducible development dependencies.
+- `tsconfig.json` is also the ESM build config (`dist/esm`); `tsconfig.cjs.json` extends it to build `dist/cjs`. `scripts/finalize-build.mjs` writes `dist/cjs/package.json` so Node treats that output as CommonJS.
+- `scripts/verify-pack.mjs` packs the tarball and installs it into throwaway ESM and CommonJS consumer projects to check both module systems resolve the published package.
 - `dist/` is generated output and must not be committed.
 
 ## Development commands
@@ -26,9 +29,10 @@ Use Node.js 18 or newer.
 npm install
 npm run check
 npm pack --dry-run
+npm run verify:pack
 ```
 
-`npm run check` performs TypeScript type checking, compilation, and runtime tests. Run `npm test` when you only need the normal test path. A release candidate must also pass `npm pack --dry-run` and the package contents must contain only the intended runtime artifacts.
+`npm run check` performs TypeScript type checking, dual ESM/CJS compilation, and runtime tests. Run `npm test` when you only need the normal test path. A release candidate must also pass `npm pack --dry-run`, with package contents containing only the intended runtime artifacts, and `npm run verify:pack`, which installs the packed tarball into throwaway ESM and CommonJS consumer projects and checks both resolve the package and produce equivalent results. `verify:pack` is not part of `check`/`prepack` — it invokes `npm pack` itself, and `npm pack` always runs `prepack`, so nesting it inside `check` would recurse.
 
 ## Adding or changing a channel
 

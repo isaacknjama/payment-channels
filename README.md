@@ -12,7 +12,25 @@ This package is a declarative contract. It does not move money, call payment pro
 npm install @minmoto/payment-channels
 ```
 
-Node.js 18 or newer is supported. The package ships as tree-shakeable ESM with generated TypeScript declarations and has no runtime dependencies.
+Node.js 18 or newer is supported. The package ships as tree-shakeable ESM and CommonJS builds with generated TypeScript declarations for each, and has no runtime dependencies.
+
+## Module systems
+
+The package publishes conditional exports so ESM, CommonJS, and TypeScript `Node16`/`NodeNext` consumers each resolve a matching build without custom path aliases or dynamic-import workarounds.
+
+ESM:
+
+```ts
+import { createPaymentChannelRegistry, validatePaymentChannelData } from "@minmoto/payment-channels";
+```
+
+CommonJS:
+
+```js
+const { createPaymentChannelRegistry, validatePaymentChannelData } = require("@minmoto/payment-channels");
+```
+
+Both entry points expose the same public symbols, schema data, and validation behavior. `require()` resolves and runs synchronously, so a CommonJS or Node16-targeted application (for example a Next.js or NestJS project) can depend on this package without switching module systems or falling back to `import()`.
 
 ## Consumer example
 
@@ -186,6 +204,7 @@ Contributor and LLM-agent instructions are in [`AGENTS.md`](./AGENTS.md). In a c
 npm install
 npm run check
 npm pack --dry-run
+npm run verify:pack
 ```
 
 The project uses semantic versioning. Keep published channel IDs and serialized enum values stable. Add tests whenever a channel or validation rule changes.

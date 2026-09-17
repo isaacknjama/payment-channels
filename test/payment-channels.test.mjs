@@ -4,7 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import * as paymentChannels from "../dist/index.js";
+import * as paymentChannels from "../dist/esm/index.js";
 import {
   PaymentChannelAutomation,
   PaymentChannelGroup,
@@ -14,7 +14,7 @@ import {
   listPaymentChannelSchemas,
   renderDetailRows,
   validatePaymentChannelData,
-} from "../dist/index.js";
+} from "../dist/esm/index.js";
 
 async function listChannelSourceFiles(directory) {
   const files = [];
