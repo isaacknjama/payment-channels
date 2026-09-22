@@ -56,6 +56,20 @@ test("registry exposes built-in KES mobile money channels", () => {
   );
 });
 
+test("registry exposes built-in MWK mobile money channels", () => {
+  const registry = createPaymentChannelRegistry();
+  const channels = listPaymentChannelSchemas(registry, {
+    currency: "MWK",
+    country: "MW",
+    group: PaymentChannelGroup.MobileMoney,
+  });
+
+  assert.deepEqual(
+    channels.map((channel) => channel.id),
+    ["airtel_money_mw_mwk", "airtel_money_till_mw_mwk", "tnm_mpamba_mw_mwk", "tnm_mpamba_merchant_mw_mwk"],
+  );
+});
+
 test("registry exposes the built-in ZAR PayShap bank channel", () => {
   const registry = createPaymentChannelRegistry();
   const channels = listPaymentChannelSchemas(registry, {
@@ -245,6 +259,82 @@ test("invalid channel data returns field issues", () => {
   ]);
 });
 
+test("Airtel Money till normalizes and renders its till number", () => {
+  const schema = builtinPaymentChannels.find((channel) => channel.id === "airtel_money_till_mw_mwk");
+  assert.ok(schema);
+
+  const validation = validatePaymentChannelData(schema, {
+    tillNumber: " 710300 ",
+  });
+
+  assert.equal(validation.valid, true);
+  assert.deepEqual(validation.data, { tillNumber: "710300" });
+  assert.deepEqual(renderDetailRows(schema, validation.data), [
+    {
+      key: "tillNumber",
+      label: "Till number",
+      value: "710300",
+      copyable: true,
+      copyValue: "710300",
+    },
+  ]);
+});
+
+test("Airtel Money till rejects an out-of-range till number", () => {
+  const schema = builtinPaymentChannels.find((channel) => channel.id === "airtel_money_till_mw_mwk");
+  assert.ok(schema);
+
+  const validation = validatePaymentChannelData(schema, {
+    tillNumber: "123",
+  });
+
+  assert.equal(validation.valid, false);
+  assert.deepEqual(validation.issues, [
+    {
+      field: "tillNumber",
+      message: "Use a 5-7 digit till number",
+    },
+  ]);
+});
+
+test("TNM Mpamba merchant normalizes and renders its merchant code", () => {
+  const schema = builtinPaymentChannels.find((channel) => channel.id === "tnm_mpamba_merchant_mw_mwk");
+  assert.ok(schema);
+
+  const validation = validatePaymentChannelData(schema, {
+    merchantCode: " 6003070 ",
+  });
+
+  assert.equal(validation.valid, true);
+  assert.deepEqual(validation.data, { merchantCode: "6003070" });
+  assert.deepEqual(renderDetailRows(schema, validation.data), [
+    {
+      key: "merchantCode",
+      label: "Merchant code",
+      value: "6003070",
+      copyable: true,
+      copyValue: "6003070",
+    },
+  ]);
+});
+
+test("TNM Mpamba merchant rejects an out-of-range merchant code", () => {
+  const schema = builtinPaymentChannels.find((channel) => channel.id === "tnm_mpamba_merchant_mw_mwk");
+  assert.ok(schema);
+
+  const validation = validatePaymentChannelData(schema, {
+    merchantCode: "12",
+  });
+
+  assert.equal(validation.valid, false);
+  assert.deepEqual(validation.issues, [
+    {
+      field: "merchantCode",
+      message: "Use a 5-7 digit merchant code",
+    },
+  ]);
+});
+
 test("detail rows mask display values while preserving copy values", () => {
   const schema = builtinPaymentChannels.find((channel) => channel.id === "mpesa_phone_ke_kes");
   assert.ok(schema);
@@ -328,16 +418,22 @@ test("every represented country has a built-in cash channel", () => {
       "cash_bi_bif",
       "cash_bw_bwp",
       "cash_et_etb",
+      "cash_gb_gbp",
+      "cash_in_inr",
       "cash_ke_kes",
       "cash_ls_lsl",
+      "cash_mu_mur",
       "cash_mw_mwk",
       "cash_mz_mzn",
       "cash_na_nad",
+      "cash_ng_ngn",
+      "cash_pk_pkr",
       "cash_rw_rwf",
       "cash_ss_ssp",
       "cash_sz_szl",
       "cash_tz_tzs",
       "cash_ug_ugx",
+      "cash_us_usd",
       "cash_za_zar",
       "cash_zm_zmw",
     ],
@@ -394,6 +490,30 @@ test("registry exposes built-in cash channels for South African markets", () => 
   }
 });
 
+test("registry exposes built-in cash channels for additional fiat currency markets", () => {
+  const registry = createPaymentChannelRegistry();
+  const markets = [
+    { country: "GB", currency: "GBP", id: "cash_gb_gbp" },
+    { country: "IN", currency: "INR", id: "cash_in_inr" },
+    { country: "MU", currency: "MUR", id: "cash_mu_mur" },
+    { country: "NG", currency: "NGN", id: "cash_ng_ngn" },
+    { country: "PK", currency: "PKR", id: "cash_pk_pkr" },
+    { country: "US", currency: "USD", id: "cash_us_usd" },
+  ];
+
+  for (const { country, currency, id } of markets) {
+    const channels = listPaymentChannelSchemas(registry, {
+      country,
+      currency,
+      group: PaymentChannelGroup.Cash,
+    });
+    assert.deepEqual(
+      channels.map((channel) => channel.id),
+      [id],
+    );
+  }
+});
+
 test("channel source files are grouped by country and match stable channel IDs", async () => {
   const channelsDirectory = fileURLToPath(new URL("../src/channels", import.meta.url));
   const filenames = await listChannelSourceFiles(channelsDirectory);
@@ -424,6 +544,14 @@ test("channel source files are grouped by country and match stable channel IDs",
     const shortId = channel.id.slice(0, -marketSuffix.length);
     const expectedPath = path.join(country, `${shortId}.ts`);
     assert.equal(path.relative(channelsDirectory, filename), expectedPath);
+  }
+});
+
+test("public entry point re-exports every built-in payment channel constant", () => {
+  const publicExports = new Set(Object.values(paymentChannels));
+
+  for (const channel of builtinPaymentChannels) {
+    assert.ok(publicExports.has(channel), `${channel.id} must be re-exported from src/index.ts`);
   }
 });
 

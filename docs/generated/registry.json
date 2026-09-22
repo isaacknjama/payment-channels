@@ -68,6 +68,40 @@
     "network": { "id": "cash", "label": "Cash", "country": "ET", "currency": "ETB" }
   },
   {
+    "id": "cash_gb_gbp",
+    "version": 2,
+    "display": {
+      "label": "Cash",
+      "shortLabel": "Cash",
+      "description": "In-person cash settlement. Cash has no structured payment fields and is not automatable.",
+      "icon": "cash",
+      "group": "cash"
+    },
+    "support": { "automation": "none" },
+    "fields": [],
+    "detailRows": [],
+    "instructions": { "payer": ["Exchange cash in person and keep local receipt evidence when required."] },
+    "evidence": [{ "key": "receiptNote", "label": "Receipt note", "type": "text", "required": false }],
+    "network": { "id": "cash", "label": "Cash", "country": "GB", "currency": "GBP" }
+  },
+  {
+    "id": "cash_in_inr",
+    "version": 2,
+    "display": {
+      "label": "Cash",
+      "shortLabel": "Cash",
+      "description": "In-person cash settlement. Cash has no structured payment fields and is not automatable.",
+      "icon": "cash",
+      "group": "cash"
+    },
+    "support": { "automation": "none" },
+    "fields": [],
+    "detailRows": [],
+    "instructions": { "payer": ["Exchange cash in person and keep local receipt evidence when required."] },
+    "evidence": [{ "key": "receiptNote", "label": "Receipt note", "type": "text", "required": false }],
+    "network": { "id": "cash", "label": "Cash", "country": "IN", "currency": "INR" }
+  },
+  {
     "id": "mpesa_phone_ke_kes",
     "version": 2,
     "display": {
@@ -429,6 +463,23 @@
     "network": { "id": "cash", "label": "Cash", "country": "LS", "currency": "LSL" }
   },
   {
+    "id": "cash_mu_mur",
+    "version": 2,
+    "display": {
+      "label": "Cash",
+      "shortLabel": "Cash",
+      "description": "In-person cash settlement. Cash has no structured payment fields and is not automatable.",
+      "icon": "cash",
+      "group": "cash"
+    },
+    "support": { "automation": "none" },
+    "fields": [],
+    "detailRows": [],
+    "instructions": { "payer": ["Exchange cash in person and keep local receipt evidence when required."] },
+    "evidence": [{ "key": "receiptNote", "label": "Receipt note", "type": "text", "required": false }],
+    "network": { "id": "cash", "label": "Cash", "country": "MU", "currency": "MUR" }
+  },
+  {
     "id": "airtel_money_mw_mwk",
     "version": 2,
     "display": {
@@ -468,6 +519,48 @@
       }
     ],
     "detailRows": [{ "key": "phoneNumber", "label": "Phone number", "fields": ["phoneNumber"], "copyable": true }],
+    "evidence": [
+      {
+        "key": "transactionReference",
+        "label": "Transaction reference",
+        "type": "text",
+        "required": true,
+        "validation": [{ "kind": "min_length", "length": 3 }]
+      }
+    ]
+  },
+  {
+    "id": "airtel_money_till_mw_mwk",
+    "version": 2,
+    "display": {
+      "label": "Airtel Money till",
+      "shortLabel": "Airtel till",
+      "description": "Airtel Money Malawi Buy Goods and Services till payment.",
+      "icon": "airtel-money",
+      "group": "mobile_money"
+    },
+    "network": { "id": "airtel_money", "label": "Airtel Money", "country": "MW", "currency": "MWK" },
+    "support": { "automation": "manual" },
+    "fields": [
+      {
+        "key": "tillNumber",
+        "label": "Till number",
+        "type": "text",
+        "required": true,
+        "placeholder": "710300",
+        "normalize": ["trim", "digits_only"],
+        "validation": [{ "kind": "pattern", "pattern": "^\\d{5,7}$", "message": "Use a 5-7 digit till number" }]
+      },
+      {
+        "key": "description",
+        "label": "Description",
+        "type": "text",
+        "required": false,
+        "normalize": ["trim"],
+        "validation": [{ "kind": "max_length", "length": 100 }]
+      }
+    ],
+    "detailRows": [{ "key": "tillNumber", "label": "Till number", "fields": ["tillNumber"], "copyable": true }],
     "evidence": [
       {
         "key": "transactionReference",
@@ -546,6 +639,48 @@
     ]
   },
   {
+    "id": "tnm_mpamba_merchant_mw_mwk",
+    "version": 2,
+    "display": {
+      "label": "TNM Mpamba merchant",
+      "shortLabel": "Mpamba merchant",
+      "description": "TNM Mpamba Pay Merchant code payment.",
+      "icon": "tnm-mpamba",
+      "group": "mobile_money"
+    },
+    "network": { "id": "tnm_mpamba", "label": "TNM Mpamba", "country": "MW", "currency": "MWK" },
+    "support": { "automation": "manual" },
+    "fields": [
+      {
+        "key": "merchantCode",
+        "label": "Merchant code",
+        "type": "text",
+        "required": true,
+        "placeholder": "6003070",
+        "normalize": ["trim", "digits_only"],
+        "validation": [{ "kind": "pattern", "pattern": "^\\d{5,7}$", "message": "Use a 5-7 digit merchant code" }]
+      },
+      {
+        "key": "description",
+        "label": "Description",
+        "type": "text",
+        "required": false,
+        "normalize": ["trim"],
+        "validation": [{ "kind": "max_length", "length": 100 }]
+      }
+    ],
+    "detailRows": [{ "key": "merchantCode", "label": "Merchant code", "fields": ["merchantCode"], "copyable": true }],
+    "evidence": [
+      {
+        "key": "transactionReference",
+        "label": "Transaction reference",
+        "type": "text",
+        "required": true,
+        "validation": [{ "kind": "min_length", "length": 3 }]
+      }
+    ]
+  },
+  {
     "id": "cash_mz_mzn",
     "version": 2,
     "display": {
@@ -578,6 +713,40 @@
     "instructions": { "payer": ["Exchange cash in person and keep local receipt evidence when required."] },
     "evidence": [{ "key": "receiptNote", "label": "Receipt note", "type": "text", "required": false }],
     "network": { "id": "cash", "label": "Cash", "country": "NA", "currency": "NAD" }
+  },
+  {
+    "id": "cash_ng_ngn",
+    "version": 2,
+    "display": {
+      "label": "Cash",
+      "shortLabel": "Cash",
+      "description": "In-person cash settlement. Cash has no structured payment fields and is not automatable.",
+      "icon": "cash",
+      "group": "cash"
+    },
+    "support": { "automation": "none" },
+    "fields": [],
+    "detailRows": [],
+    "instructions": { "payer": ["Exchange cash in person and keep local receipt evidence when required."] },
+    "evidence": [{ "key": "receiptNote", "label": "Receipt note", "type": "text", "required": false }],
+    "network": { "id": "cash", "label": "Cash", "country": "NG", "currency": "NGN" }
+  },
+  {
+    "id": "cash_pk_pkr",
+    "version": 2,
+    "display": {
+      "label": "Cash",
+      "shortLabel": "Cash",
+      "description": "In-person cash settlement. Cash has no structured payment fields and is not automatable.",
+      "icon": "cash",
+      "group": "cash"
+    },
+    "support": { "automation": "none" },
+    "fields": [],
+    "detailRows": [],
+    "instructions": { "payer": ["Exchange cash in person and keep local receipt evidence when required."] },
+    "evidence": [{ "key": "receiptNote", "label": "Receipt note", "type": "text", "required": false }],
+    "network": { "id": "cash", "label": "Cash", "country": "PK", "currency": "PKR" }
   },
   {
     "id": "cash_rw_rwf",
@@ -663,6 +832,23 @@
     "instructions": { "payer": ["Exchange cash in person and keep local receipt evidence when required."] },
     "evidence": [{ "key": "receiptNote", "label": "Receipt note", "type": "text", "required": false }],
     "network": { "id": "cash", "label": "Cash", "country": "UG", "currency": "UGX" }
+  },
+  {
+    "id": "cash_us_usd",
+    "version": 2,
+    "display": {
+      "label": "Cash",
+      "shortLabel": "Cash",
+      "description": "In-person cash settlement. Cash has no structured payment fields and is not automatable.",
+      "icon": "cash",
+      "group": "cash"
+    },
+    "support": { "automation": "none" },
+    "fields": [],
+    "detailRows": [],
+    "instructions": { "payer": ["Exchange cash in person and keep local receipt evidence when required."] },
+    "evidence": [{ "key": "receiptNote", "label": "Receipt note", "type": "text", "required": false }],
+    "network": { "id": "cash", "label": "Cash", "country": "US", "currency": "USD" }
   },
   {
     "id": "payshap_shapid_za_zar",
